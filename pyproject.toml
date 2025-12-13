@@ -1,0 +1,29 @@
+[project]
+name = "regime-classifier"
+version = "0.1.0"
+description = "Monorepo root for Quant System"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[tool.uv.sources]
+common = { workspace = true }
+
+[tool.uv.workspace]
+members = [
+    "packages/*",
+]
+
+[tool.ruff]
+line-length = 128
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]  # Errors, Pyflakes, Isort, Bugbear
+
+[dependency-groups]
+dev = [
+    "pyrefly>=0.45.2",
+    "ruff>=0.14.9",
+    "ty>=0.0.1a34",
+]
