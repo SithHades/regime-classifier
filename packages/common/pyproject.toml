@@ -1,7 +1,7 @@
 [project]
 name = "common"
 version = "0.1.0"
-description = "Add your description here"
+description = "Common library for Quant System"
 readme = "README.md"
 authors = [
     { name = "Luca Knaack", email = "l.knaack93@gmail.com" }
@@ -10,6 +10,8 @@ requires-python = ">=3.13"
 dependencies = [
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
+    "sqlalchemy>=2.0.0",
+    "pandas>=2.0.0",
 ]
 
 [build-system]
