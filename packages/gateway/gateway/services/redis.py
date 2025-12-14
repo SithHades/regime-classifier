@@ -1,6 +1,8 @@
 from typing import Optional
+
 import redis.asyncio as redis
 from pydantic_settings import BaseSettings
+
 
 class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379"
@@ -9,13 +11,15 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
 
+
 settings = Settings()
+
 
 class RedisService:
     def __init__(self, url: str = settings.redis_url):
         self.url = url
         self.redis: Optional[redis.Redis] = None
-        self.mock_data = {} # For mock mode
+        self.mock_data = {}  # For mock mode
 
     async def connect(self):
         # In a real scenario, we might want to check connection
@@ -33,16 +37,17 @@ class RedisService:
 
     async def set(self, key: str, value: str):
         if self.redis:
-             try:
+            try:
                 await self.redis.set(key, value)
                 return
-             except redis.ConnectionError:
+            except redis.ConnectionError:
                 pass
         self.mock_data[key] = value
 
     async def close(self):
         if self.redis:
             await self.redis.close()
+
 
 # Global instance
 redis_service = RedisService()
