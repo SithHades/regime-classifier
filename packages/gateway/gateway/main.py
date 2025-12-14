@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from x402 import require_payment
+from x402.fastapi.middleware import require_payment
 
 from .limiter import limiter
 from .routers import portfolio, regime
@@ -28,7 +28,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # Middleware
 app.middleware("http")(
     require_payment(
-        price="0.01", pay_to_address="0x6dbe7555f408021C1d6EB9c84512cb1a72eE1E3F", path=["v1/portfolio/risk", "v1/regime"]
+        price="0.01", pay_to_address="0x6dbe7555f408021C1d6EB9c84512cb1a72eE1E3F", path=["/v1/portfolio/risk", "/v1/regime"]
     )
 )
 
