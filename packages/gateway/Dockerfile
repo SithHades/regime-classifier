@@ -29,4 +29,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 EXPOSE 8000
 
 # Run the application
-CMD ["uvicorn", "gateway.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "gateway.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
