@@ -1,6 +1,7 @@
 import logging
 
 import redis.asyncio as redis
+from redis.asyncio.client import Redis
 
 from .config import settings
 
@@ -9,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class Producer:
     def __init__(self):
-        self.redis = None
+        self.redis: Redis | None = None
 
     async def connect(self):
         logger.info(f"Connecting to Redis: {settings.REDIS_URL}")
