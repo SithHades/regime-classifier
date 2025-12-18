@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 async def start_health_server():
-    config = uvicorn.Config(app, host="0.0.0.0", port=settings.HEALTH_CHECK_PORT, log_level="info")
+    config = uvicorn.Config(app, host="0.0.0.0", port=settings.health_check_port, log_level="info")
     server = uvicorn.Server(config)
     await server.serve()
 

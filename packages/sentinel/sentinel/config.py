@@ -6,11 +6,12 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
 
     # App
-    APP_NAME: str = "sentinel"
+    app_name: str = "sentinel"
 
     # Redis
-    REDIS_URL: str = "redis://localhost:6379/0"
-    REDIS_STREAM_KEY: str = "market_data_feed"
+    redis_url: str = "redis://localhost:6379/0"
+    redis_stream_key: str = "market_data_feed"
+    redis_stream_max_len: int = 10000
 
     # TimescaleDB / Postgres
     # TimescaleDB / Postgres
@@ -32,14 +33,14 @@ class Settings(BaseSettings):
 
     # Exchange
     # Exchange
-    WATCH_SYMBOLS: list[str] = ["btcusdt", "ethusdt"]
-    KLINE_INTERVAL: str = "1h"
+    watch_symbols: list[str] = ["btcusdt", "ethusdt"]
+    kline_interval: str = "1h"
     # Base WebSocket URL for Binance
-    BINANCE_WS_BASE_URL: str = "wss://stream.binance.com:9443/stream?streams="
+    binance_ws_base_url: str = "wss://stream.binance.com:9443/stream?streams="
 
     # Health Check
-    HEALTH_CHECK_PORT: int = 8000
-    LIVENESS_THRESHOLD_SECONDS: int = 60
+    health_check_port: int = 8000
+    liveness_threshold_seconds: int = 60
 
 
 settings = Settings()

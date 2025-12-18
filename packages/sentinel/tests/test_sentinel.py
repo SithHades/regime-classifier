@@ -145,8 +145,8 @@ async def test_binance_connector_config():
     from sentinel import config
 
     # Patch settings
-    original_symbols = config.settings.WATCH_SYMBOLS
-    original_interval = config.settings.KLINE_INTERVAL
+    original_symbols = config.settings.watch_symbols
+    original_interval = config.settings.kline_interval
 
     try:
         config.settings.WATCH_SYMBOLS = ["APPLES", "ORANGES"]
@@ -156,7 +156,7 @@ async def test_binance_connector_config():
         # Verify URL construction
         assert "apples@kline_4h" in connector.url
         assert "oranges@kline_4h" in connector.url
-        assert config.settings.BINANCE_WS_BASE_URL in connector.url
+        assert config.settings.binance_ws_base_url in connector.url
     finally:
         config.settings.WATCH_SYMBOLS = original_symbols
         config.settings.KLINE_INTERVAL = original_interval

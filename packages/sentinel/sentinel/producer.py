@@ -13,8 +13,8 @@ class Producer:
         self.redis: Redis | None = None
 
     async def connect(self):
-        logger.info(f"Connecting to Redis: {settings.REDIS_URL}")
-        self.redis = redis.from_url(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
+        logger.info(f"Connecting to Redis: {settings.redis_url}")
+        self.redis = redis.from_url(settings.redis_url, encoding="utf-8", decode_responses=True)
         try:
             await self.redis.ping()
             logger.info("Redis connected successfully.")
@@ -52,8 +52,8 @@ class Producer:
             # `model_dump(mode='json')` converts datetime to str if we configured json_encoders properly.
             # Pydantic V2 `model_dump(mode='json')` produces types compatible with JSON (str for datetime).
 
-            await self.redis.xadd(settings.REDIS_STREAM_KEY, payload)
-            logger.debug(f"Published candle to {settings.REDIS_STREAM_KEY}: {payload['symbol']} {payload['timestamp']}")
+            await self.redis.xadd(settings.redis_stream_key, payload, maxlen=settings.redis_stream_max_len)
+            logger.debug(f"Published candle to {settings.redis_stream_key}: {payload['symbol']} {payload['timestamp']}")
         except Exception as e:
             logger.error(f"Failed to publish to Redis: {e}")
 

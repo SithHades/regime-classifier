@@ -17,7 +17,7 @@ class HealthMonitor:
 
     def is_healthy(self) -> bool:
         delta = datetime.now() - self.last_heartbeat
-        return delta.total_seconds() < settings.LIVENESS_THRESHOLD_SECONDS
+        return delta.total_seconds() < settings.liveness_threshold_seconds
 
 
 health_monitor = HealthMonitor()
@@ -40,4 +40,4 @@ async def health_check():
 
 @app.get("/")
 async def root():
-    return {"service": settings.APP_NAME, "status": "running"}
+    return {"service": settings.app_name, "status": "running"}

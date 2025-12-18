@@ -1,3 +1,3 @@
 from sentinel.config import settings
 
-print(f"DATABASE_URL: {settings.database_url}")
+print(f"database_url: {settings.database_url}")
