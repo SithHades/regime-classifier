@@ -1,7 +1,10 @@
-from pydantic_settings import BaseSettings
+from pydantic import model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env")
+
     # App
     APP_NAME: str = "sentinel"
 
@@ -10,7 +13,22 @@ class Settings(BaseSettings):
     REDIS_STREAM_KEY: str = "market_data_feed"
 
     # TimescaleDB / Postgres
-    DATABASE_URL: str = "postgresql://postgres:password@localhost:5432/quant"
+    # TimescaleDB / Postgres
+    database_user: str = "postgres"
+    database_password: str = "password"
+    database_host: str = "localhost"
+    database_port: int = 5432
+    database_name: str = "quant"
+    database_url: str | None = None
+
+    @model_validator(mode="after")
+    def assemble_db_url(self) -> "Settings":
+        if self.database_url is None:
+            self.database_url = (
+                f"postgresql://{self.database_user}:{self.database_password}"
+                f"@{self.database_host}:{self.database_port}/{self.database_name}"
+            )
+        return self
 
     # Exchange
     EXCHANGE_WEBSOCKET_URL: str = "wss://stream.binance.com:9443/stream?streams=btcusdt@kline_1h/ethusdt@kline_1h"
