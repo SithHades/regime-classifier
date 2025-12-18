@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 class BinanceSentinel:
     def __init__(self):
-        streams = [f"{symbol.lower()}@kline_{settings.KLINE_INTERVAL}" for symbol in settings.WATCH_SYMBOLS]
-        self.url = f"{settings.BINANCE_WS_BASE_URL}{'/'.join(streams)}"
+        streams = [f"{symbol.lower()}@kline_{settings.kline_interval}" for symbol in settings.watch_symbols]
+        self.url = f"{settings.binance_ws_base_url}{'/'.join(streams)}"
         self.running = False
 
     async def start(self):
