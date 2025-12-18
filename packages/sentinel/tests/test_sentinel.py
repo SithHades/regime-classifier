@@ -8,10 +8,10 @@ from httpx import ASGITransport, AsyncClient
 
 # Import sentinel modules
 # We need to make sure we can import src.sentinel
-from src.sentinel.connector import BinanceSentinel
-from src.sentinel.db import db
-from src.sentinel.health import app
-from src.sentinel.producer import producer
+from sentinel.connector import BinanceSentinel
+from sentinel.db import db
+from sentinel.health import app
+from sentinel.producer import producer
 
 
 @pytest.fixture
@@ -113,7 +113,7 @@ async def test_binance_connector_ignores_open_candle(mock_db, mock_producer):
 @pytest.mark.asyncio
 async def test_health_check_healthy():
     # Simulate recent heartbeat
-    from src.sentinel.health import health_monitor
+    from sentinel.health import health_monitor
 
     health_monitor.update_heartbeat()
 
@@ -128,7 +128,7 @@ async def test_health_check_healthy():
 async def test_health_check_unhealthy():
     from datetime import timedelta
 
-    from src.sentinel.health import health_monitor
+    from sentinel.health import health_monitor
 
     # Simulate old heartbeat
     health_monitor.last_heartbeat = datetime.now() - timedelta(seconds=120)
@@ -137,3 +137,36 @@ async def test_health_check_unhealthy():
         response = await ac.get("/health")
 
     assert response.status_code == 503
+
+
+@pytest.mark.asyncio
+async def test_binance_connector_config():
+    from sentinel.connector import BinanceSentinel
+    from sentinel import config
+
+    # Patch settings
+    original_symbols = config.settings.WATCH_SYMBOLS
+    original_interval = config.settings.KLINE_INTERVAL
+
+    try:
+        config.settings.WATCH_SYMBOLS = ["APPLES", "ORANGES"]
+        config.settings.KLINE_INTERVAL = "4h"
+
+        connector = BinanceSentinel()
+        # Verify URL construction
+        assert "apples@kline_4h" in connector.url
+        assert "oranges@kline_4h" in connector.url
+        assert config.settings.BINANCE_WS_BASE_URL in connector.url
+    finally:
+        config.settings.WATCH_SYMBOLS = original_symbols
+        config.settings.KLINE_INTERVAL = original_interval
+
+
+def test_symbol_normalization():
+    from sentinel.connector import BinanceSentinel
+
+    connector = BinanceSentinel()
+
+    assert connector._normalize_symbol("BTCUSDT") == "BTC-USD"
+    assert connector._normalize_symbol("ETHUSDT") == "ETH-USD"
+    assert connector._normalize_symbol("SOL-USD") == "SOL-USD"

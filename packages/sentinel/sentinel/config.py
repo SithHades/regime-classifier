@@ -31,11 +31,11 @@ class Settings(BaseSettings):
         return self
 
     # Exchange
-    EXCHANGE_WEBSOCKET_URL: str = "wss://stream.binance.com:9443/stream?streams=btcusdt@kline_1h/ethusdt@kline_1h"
-    # Example stream URL for 1h candles for BTC and ETH.
-    # Binance stream name format: <symbol>@kline_<interval>
-    # Note: user mentioned configurable subscription lists.
-    # For v1 we can use a comma separated string or just default to this URL which supports multiple streams.
+    # Exchange
+    WATCH_SYMBOLS: list[str] = ["btcusdt", "ethusdt"]
+    KLINE_INTERVAL: str = "1h"
+    # Base WebSocket URL for Binance
+    BINANCE_WS_BASE_URL: str = "wss://stream.binance.com:9443/stream?streams="
 
     # Health Check
     HEALTH_CHECK_PORT: int = 8000

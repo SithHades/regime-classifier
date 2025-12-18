@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 
 class BinanceSentinel:
     def __init__(self):
-        self.url = settings.EXCHANGE_WEBSOCKET_URL
+        streams = [f"{symbol.lower()}@kline_{settings.KLINE_INTERVAL}" for symbol in settings.WATCH_SYMBOLS]
+        self.url = f"{settings.BINANCE_WS_BASE_URL}{'/'.join(streams)}"
         self.running = False
 
     async def start(self):
@@ -89,8 +90,7 @@ class BinanceSentinel:
 
             # Normalize symbol: BTCUSDT -> BTC-USD (Assumption based on reqs)
             raw_symbol = kline["s"]
-            # A simple heuristic for now. In prod we'd map this properly.
-            symbol = raw_symbol.replace("USDT", "-USD")
+            symbol = self._normalize_symbol(raw_symbol)
 
             # Timestamp: "t" is start time in ms.
             ts = datetime.fromtimestamp(kline["t"] / 1000.0)
@@ -126,6 +126,13 @@ class BinanceSentinel:
 
         except Exception as e:
             logger.error(f"Error processing message: {e} | Msg: {msg}")
+
+    def _normalize_symbol(self, raw_symbol: str) -> str:
+        # Basic normalization for common pairs
+        # In a real system, this would look up from a database or config map
+        if raw_symbol.endswith("USDT"):
+            return f"{raw_symbol[:-4]}-USD"
+        return raw_symbol
 
 
 connector = BinanceSentinel()
