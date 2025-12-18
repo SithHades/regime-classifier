@@ -105,6 +105,7 @@ class BinanceSentinel:
                 low=float(kline["l"]),
                 close=float(kline["c"]),
                 volume=float(kline["v"]),
+                timeframe=kline["i"],
             )
 
             # Deduplication handled by DB constraint (time, symbol, exchange).
