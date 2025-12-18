@@ -23,7 +23,8 @@ class TestAnalytics(unittest.TestCase):
                 symbol="BTC-USD",
                 timestamp=base_time + timedelta(hours=i),
                 open=price, high=price+1, low=price-1, close=price,
-                volume=1000
+                volume=1000,
+                timeframe="1h"
             ))
 
     def test_calculate_technical_indicators(self):

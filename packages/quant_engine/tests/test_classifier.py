@@ -9,7 +9,8 @@ from quant_engine.repository import Repository, Config
 
 class TestClassifier(unittest.TestCase):
     def setUp(self):
-        self.config = Config(MODE="RULE_BASED", VOLATILITY_THRESHOLD=0.01)
+        # Update Config case
+        self.config = Config(mode="RULE_BASED", volatility_threshold=0.01)
         self.repository = MagicMock(spec=Repository)
         self.classifier = RegimeClassifier(self.repository, self.config)
 
@@ -20,7 +21,8 @@ class TestClassifier(unittest.TestCase):
             self.candles.append(Candle(
                 symbol="BTC-USD",
                 timestamp=base_time,
-                open=price, high=price, low=price, close=price, volume=100
+                open=price, high=price, low=price, close=price, volume=100,
+                timeframe="1h"
             ))
 
     def test_rule_based_classification(self):
@@ -31,7 +33,7 @@ class TestClassifier(unittest.TestCase):
         # Since volatility is likely high due to modulo oscillation
 
     def test_ml_based_fallback(self):
-        self.config.MODE = "ML_CLUSTERING"
+        self.config.mode = "ML_CLUSTERING"
         self.repository.get_latest_centroids.return_value = None # Simulate no model
 
         result = self.classifier.classify(self.candles)
@@ -40,7 +42,7 @@ class TestClassifier(unittest.TestCase):
         self.assertTrue("VOL" in result.regime_label)
 
     def test_ml_based_classification(self):
-        self.config.MODE = "ML_CLUSTERING"
+        self.config.mode = "ML_CLUSTERING"
         # Mock centroids: 2 clusters, 3 dims [vol, slope, rsi]
         self.repository.get_latest_centroids.return_value = {
             'centroids': [[0.0, 0.0, 50.0], [1.0, 1.0, 80.0]],

@@ -10,6 +10,7 @@ class Candle(BaseModel):
     low: float
     close: float
     volume: float
+    timeframe: str
 
     class Config:
         from_attributes = True

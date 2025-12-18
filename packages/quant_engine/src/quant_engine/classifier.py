@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 from common.models import Candle, RegimeResult, RegimeMetrics
 from .analytics import calculate_technical_indicators
-from .repository import Repository, Config
+from .repository import Repository, Config, CentroidData
 from datetime import datetime
 
 class RegimeClassifier:
@@ -35,7 +35,7 @@ class RegimeClassifier:
         if pd.isna(current_state['volatility']):
             return None
 
-        if self.config.MODE == "ML_CLUSTERING":
+        if self.config.mode == "ML_CLUSTERING":
             return self._classify_ml(current_state, candles[-1])
         else:
             return self._classify_rule_based(current_state, candles[-1])
@@ -49,11 +49,11 @@ class RegimeClassifier:
         vol = state['volatility']
         trend = state.get('sma_slope', 0)
 
-        vol_high = vol > self.config.VOLATILITY_THRESHOLD
+        vol_high = vol > self.config.volatility_threshold
 
-        if trend > self.config.TREND_THRESHOLD:
+        if trend > self.config.trend_threshold:
             direction = "BULL"
-        elif trend < -self.config.TREND_THRESHOLD:
+        elif trend < -self.config.trend_threshold:
             direction = "BEAR"
         else:
             direction = "SIDEWAYS"
@@ -82,15 +82,12 @@ class RegimeClassifier:
         ML-Based logic:
         Load centroids, calculate distance, assign nearest cluster.
         """
-        centroids_data = self.repository.get_latest_centroids()
+        centroids_data: Optional[CentroidData] = self.repository.get_latest_centroids()
 
         if not centroids_data:
             # Fallback to rule based if no model loaded
             print("No centroids found, falling back to rule-based.")
             return self._classify_rule_based(state, last_candle)
-
-        # Assuming centroids_data structure: {'centroids': [[v1, v2], ...], 'labels': ['BULL', ...], 'scaler_mean': ..., 'scaler_scale': ...}
-        # We need to standardize the input vector using the same scaler used during training.
 
         try:
             centroids = np.array(centroids_data.get('centroids', []))
@@ -101,10 +98,14 @@ class RegimeClassifier:
             if len(centroids) == 0:
                 return self._classify_rule_based(state, last_candle)
 
-            # Feature vector: [volatility, sma_slope, rsi] - needs to match training features!
-            # Let's assume the training used these 3 features in this order.
-            # In a real system, feature names should be part of the model config.
-            features = [state['volatility'], state.get('sma_slope', 0), state.get('rsi', 50)]
+            # Feature vector: construct from config feature names
+            features = []
+            for feature_name in self.config.feature_names:
+                val = state.get(feature_name, 0)
+                if pd.isna(val):
+                    val = 0
+                features.append(val)
+
             feature_vector = np.array(features)
 
             # Scale
@@ -118,7 +119,6 @@ class RegimeClassifier:
             nearest_idx = np.argmin(distances)
 
             # Confidence could be inverse of distance or probability if using GMM.
-            # Here, simple distance-based confidence is tricky, but we can return 1/(1+dist)
             confidence = 1.0 / (1.0 + distances[nearest_idx])
 
             label = labels[nearest_idx] if nearest_idx < len(labels) else f"CLUSTER_{nearest_idx}"

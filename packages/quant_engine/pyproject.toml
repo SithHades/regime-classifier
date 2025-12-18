@@ -1,7 +1,7 @@
 [project]
 name = "quant-engine"
 version = "0.1.0"
-description = "Service B - The Quant Engine"
+description = "The Quant Engine"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
