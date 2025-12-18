@@ -22,18 +22,10 @@ class Settings(BaseSettings):
     database_name: str = "quant"
     database_url: str | None = None
 
-    @model_validator(mode="after")
-    def assemble_db_url(self) -> "Settings":
-        if self.database_url is None:
-            self.database_url = (
-                f"postgresql://{self.database_user}:{self.database_password}"
-                f"@{self.database_host}:{self.database_port}/{self.database_name}"
-            )
-        return self
-
     # Exchange
     # Exchange
-    watch_symbols: list[str] = ["btcusdt", "ethusdt"]
+    watch_symbols_str: str = "btcusdt,ethusdt"
+    watch_symbols: list[str] = []
     kline_interval: str = "1h"
     # Base WebSocket URL for Binance
     binance_ws_base_url: str = "wss://stream.binance.com:9443/stream?streams="
@@ -41,6 +33,17 @@ class Settings(BaseSettings):
     # Health Check
     health_check_port: int = 8000
     liveness_threshold_seconds: int = 60
+
+    @model_validator(mode="after")
+    def assemble_db_url(self) -> "Settings":
+        if self.database_url is None:
+            self.database_url = (
+                f"postgresql://{self.database_user}:{self.database_password}"
+                f"@{self.database_host}:{self.database_port}/{self.database_name}"
+            )
+        if self.watch_symbols_str:
+            self.watch_symbols = self.watch_symbols_str.split(",")
+        return self
 
 
 settings = Settings()
