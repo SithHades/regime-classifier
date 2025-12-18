@@ -1,0 +1,49 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/.git": true,
+            "**/.svn": true,
+            "**/.hg": true,
+            "**/CVS": true,
+            "**/.DS_Store": true,
+            "**/Thumbs.db": true,
+            "**/*.pyc": true,
+            "**/__pycache__": true,
+            "**/.venv": true,
+            "**/.ruff_cache": true,
+            "**/.mypy_cache": true,
+            "**/.pytest_cache": true,
+            "**/node_modules": true,
+            "**/dist": true,
+            "**/build": true,
+            "**/*.egg-info": true,
+            "**/.coverage": true,
+            "**/htmlcov": true
+        },
+        "search.exclude": {
+            "**/.git": true,
+            "**/.svn": true,
+            "**/.hg": true,
+            "**/CVS": true,
+            "**/.DS_Store": true,
+            "**/Thumbs.db": true,
+            "**/*.pyc": true,
+            "**/__pycache__": true,
+            "**/.venv": true,
+            "**/.ruff_cache": true,
+            "**/.mypy_cache": true,
+            "**/.pytest_cache": true,
+            "**/node_modules": true,
+            "**/dist": true,
+            "**/build": true,
+            "**/*.egg-info": true,
+            "**/.coverage": true,
+            "**/htmlcov": true
+        }
+    }
+}
