@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     # Redis
     redis_url: str = "redis://localhost:6379/0"
     redis_stream_key: str = "market_data_feed"
+    redis_stream_max_len: int = 10000
 
     # TimescaleDB / Postgres
     # TimescaleDB / Postgres

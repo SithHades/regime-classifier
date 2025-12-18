@@ -52,7 +52,7 @@ class Producer:
             # `model_dump(mode='json')` converts datetime to str if we configured json_encoders properly.
             # Pydantic V2 `model_dump(mode='json')` produces types compatible with JSON (str for datetime).
 
-            await self.redis.xadd(settings.redis_stream_key, payload)
+            await self.redis.xadd(settings.redis_stream_key, payload, maxlen=settings.redis_stream_max_len)
             logger.debug(f"Published candle to {settings.redis_stream_key}: {payload['symbol']} {payload['timestamp']}")
         except Exception as e:
             logger.error(f"Failed to publish to Redis: {e}")
