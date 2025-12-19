@@ -1,15 +1,40 @@
+import time
+import schedule
+import logging
 from training import train_model
 
-def main():
-    print("Starting Lab Service...")
-    # In a real scenario, we might set up the Cron schedule here or rely on external Cron.
-    # The prompt says "Scheduled Execution: Configurable via Cron".
-    # Usually this means the script is executed by cron.
-    # So we just run the training job once.
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+def job():
+    logger.info("Running scheduled training job...")
     try:
         train_model()
     except Exception as e:
-        print(f"Job failed: {e}")
+        logger.error(f"Job failed: {e}")
+
+def main():
+    logger.info("Starting Lab Service (Online Mode)...")
+
+    # Run once immediately on startup? Or wait for schedule?
+    # Usually safer to run once to ensure state is fresh, then schedule.
+    # But for a strict schedule, we might just wait.
+    # Let's run once on startup for now so we have a model.
+    job()
+
+    # Schedule: "runs every Sunday at 00:00 UTC"
+    # Note: 'schedule' uses system time. We assume container is in UTC.
+    schedule.every().sunday.at("00:00").do(job)
+
+    logger.info("Scheduler started. Waiting for next job...")
+
+    while True:
+        schedule.run_pending()
+        time.sleep(60)
 
 if __name__ == "__main__":
     main()
